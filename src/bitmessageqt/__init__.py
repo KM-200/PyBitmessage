@@ -1,21 +1,29 @@
-from debug import logger
+"""
+PyQt based UI for bitmessage, the main module
+"""
+
+import hashlib
+import locale
+import os
+import random
+import string
 import sys
+import textwrap
+import time
+from datetime import datetime, timedelta
+from sqlite3 import register_adapter
 
-try:
-    from PyQt4 import QtCore, QtGui
-    from PyQt4.QtNetwork import QLocalSocket, QLocalServer
-except Exception as err:
-    logmsg = 'PyBitmessage requires PyQt unless you want to run it as a daemon and interact with it using the API. You can download it from http://www.riverbankcomputing.com/software/pyqt/download or by searching Google for \'PyQt Download\' (without quotes).'
-    logger.critical(logmsg, exc_info=True)
-    sys.exit()
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtNetwork import QLocalSocket, QLocalServer
 
+from debug import logger
 from tr import _translate
 from addresses import decodeAddress, addBMIfNotPresent
 import shared
 from bitmessageui import Ui_MainWindow
 from bmconfigparser import BMConfigParser
 import defaults
-from namecoin import namecoinConnection
+import namecoin
 from messageview import MessageView
 from migrationwizard import Ui_MigrationWizard
 from foldertree import (
@@ -25,17 +33,7 @@ from foldertree import (
 from settings import Ui_settingsDialog
 import settingsmixin
 import support
-import locale
-import time
-import os
-import hashlib
-from pyelliptic.openssl import OpenSSL
-import textwrap
 import debug
-import random
-from sqlite3 import register_adapter
-import string
-from datetime import datetime, timedelta
 from helper_ackPayload import genAckPayload
 from helper_sql import sqlQuery, sqlExecute, sqlExecuteChunked, sqlStoredProcedure
 import helper_search
@@ -257,6 +255,8 @@ class MyForm(settingsmixin.SMainWindow):
 
         # load all gui.menu plugins with prefix 'address'
         self.menu_plugins = {'address': []}
+        if not get_plugins:
+            return
         for plugin in get_plugins('gui.menu', 'address'):
             try:
                 handler, title = plugin(self)
@@ -799,7 +799,8 @@ class MyForm(settingsmixin.SMainWindow):
 
         self.initSettings()
 
-        self.namecoin = namecoinConnection()
+        namecoin.ensureNamecoinOptions()
+        self.namecoin = namecoin.namecoinConnection()
 
         # Check to see whether we can connect to namecoin.
         # Hide the 'Fetch Namecoin ID' button if we can't.

@@ -300,7 +300,7 @@ class BMProto(AdvancedDispatcher, ObjectTracker):
     def _command_inv(self, dandelion=False):
         items = self.decode_payload_content("l32s")
 
-        if len(items) >= BMProto.maxObjectCount:
+        if len(items) > BMProto.maxObjectCount:
             logger.error("Too many items in %sinv message!", "d" if dandelion else "")
             raise BMProtoExcessiveDataError()
         else:
@@ -334,7 +334,7 @@ class BMProto(AdvancedDispatcher, ObjectTracker):
         self.object = BMObject(nonce, expiresTime, objectType, version, streamNumber, self.payload, self.payloadOffset)
 
         if len(self.payload) - self.payloadOffset > BMProto.maxObjectPayloadSize:
-            logger.info('The payload length of this object is too large (%s bytes). Ignoring it.' % len(self.payload) - self.payloadOffset)
+            logger.info('The payload length of this object is too large (%d bytes). Ignoring it.' % (len(self.payload) - self.payloadOffset))
             raise BMProtoExcessiveDataError()
 
         try:

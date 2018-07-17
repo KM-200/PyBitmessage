@@ -1,12 +1,30 @@
 #!/usr/bin/env python2.7
 
 import os
-import sys
 import shutil
+
 from setuptools import setup, Extension
 from setuptools.command.install import install
 
 from src.version import softwareVersion
+
+
+EXTRAS_REQUIRE = {
+    'gir': ['pygobject'],
+    'notify2': ['notify2'],
+    'pyopencl': ['pyopencl'],
+    'prctl': ['python_prctl'],  # Named threads
+    'qrcode': ['qrcode'],
+    'sound;platform_system=="Windows"': ['winsound'],
+    'docs': [
+        'sphinx',  # fab build_docs
+        'graphviz',  # fab build_docs
+        'curses',  # src/depends.py
+        'python2-pythondialog',  # src/depends.py
+        'm2r',  # fab build_docs
+    ],
+}
+
 
 class InstallCmd(install):
     def run(self):
@@ -78,13 +96,7 @@ if __name__ == "__main__":
         # TODO: add keywords
         #keywords='',
         install_requires=installRequires,
-        extras_require={
-            'gir': ['pygobject'],
-            'qrcode': ['qrcode'],
-            'pyopencl': ['pyopencl'],
-            'notify2': ['notify2'],
-            'sound;platform_system=="Windows"': ['winsound']
-        },
+        extras_require=EXTRAS_REQUIRE,
         classifiers=[
             "License :: OSI Approved :: MIT License"
             "Operating System :: OS Independent",
