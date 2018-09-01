@@ -1,3 +1,8 @@
+https://bitmessage.org/wiki/Main_Page
+
+https://github.com/KM-200/PyBitmessage/wiki
+
+https://km-200.github.io/PyBitmessage
 PyBitmessage
 ============
 
